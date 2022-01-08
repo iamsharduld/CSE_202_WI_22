@@ -1,9 +1,9 @@
 import random
 
 
-for t in range(4):
+for t in range(2,16):
 
-    num_vertices = random.randint(5*(10**t),10*(10**t))
+    num_vertices = 2**t
     print(num_vertices)
     g = []
 

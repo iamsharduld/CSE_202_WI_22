@@ -1,4 +1,22 @@
-V = [[0,1,0], [1,1,1], [0,0,1]]
+V = [[0,1,0], [1,1,1], [1,0,1]]
+
+def graph_generator(num_vertices):
+    print(num_vertices)
+    g = []
+
+    for i in range(num_vertices):
+        
+        tmp = []
+
+        for j in range(num_vertices):
+            prob = random.randint(0, 1)
+            tmp.append(prob)
+
+        g.append(tmp)
+    print(g)
+    return g
+
+
 
 # Algorithm 1
 # O(V^3)
@@ -44,6 +62,17 @@ def optimal(graph):
     return False
 
 
+import timeit
+
+for i in range(2,10):
+    
+    graph = graph_generator(2**i)
+    n = len(graph)
+    t1 = timeit.timeit(lambda: brute_force(graph), number=1)
+    t2 = timeit.timeit(lambda: optimal(graph), number=1)
+
+
+print(brute_force(V))
 
 
 
