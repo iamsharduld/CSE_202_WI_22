@@ -1,7 +1,10 @@
-V = [[0,1,0], [1,1,1], [1,0,1]]
+import random
+
+import matplotlib.pyplot as plt
+import math
 
 def graph_generator(num_vertices):
-    print(num_vertices)
+    # print(num_vertices)
     g = []
 
     for i in range(num_vertices):
@@ -13,9 +16,14 @@ def graph_generator(num_vertices):
             tmp.append(prob)
 
         g.append(tmp)
-    print(g)
+    # print(g)
     return g
 
+def plot_figure(x_array, y_array):
+    plt.plot(x_array, y_array)    
+    plt.ylabel('Time')
+    plt.xlabel('Input Size')
+    plt.show()
 
 
 # Algorithm 1
@@ -63,18 +71,27 @@ def optimal(graph):
 
 
 import timeit
+two_power = []
+algo1_time = []
+algo2_time = []
 
-for i in range(2,10):
+for i in range(2,12):
     
     graph = graph_generator(2**i)
+    print("Graph generated for Num Nodes=",2**i)
     n = len(graph)
     t1 = timeit.timeit(lambda: brute_force(graph), number=1)
     t2 = timeit.timeit(lambda: optimal(graph), number=1)
 
+    two_power.append(i)
+    algo1_time.append(math.log(t1,10))
+    algo2_time.append(math.log(t2,10))
 
-print(brute_force(V))
 
+print(two_power)
+print(algo1_time)
+print(algo2_time)
 
-
-
+plot_figure(two_power, algo1_time)
+plot_figure(two_power, algo2_time)
 
