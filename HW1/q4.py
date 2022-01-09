@@ -20,9 +20,11 @@ def graph_generator(num_vertices):
     return g
 
 def plot_figure(x_array, y_array):
-    plt.plot(x_array, y_array)    
-    plt.ylabel('Time')
-    plt.xlabel('Input Size')
+    plt.plot(x_array, y_array)   
+    # print("C2H5OH".translate(subscript)) 
+
+    plt.ylabel('$\mathregular{Log_{10}}$(Time)')
+    plt.xlabel('$\mathregular{Log_{2}}$(N)')
     plt.show()
 
 
@@ -76,16 +78,23 @@ algo1_time = []
 algo2_time = []
 
 for i in range(2,12):
-    
-    graph = graph_generator(2**i)
+    temp_t1 = []
+    temp_t2 = []
     print("Graph generated for Num Nodes=",2**i)
-    n = len(graph)
-    t1 = timeit.timeit(lambda: brute_force(graph), number=1)
-    t2 = timeit.timeit(lambda: optimal(graph), number=1)
+    for gr in range(20):
+        graph = graph_generator(2**i)
+        n = len(graph)
+        t1 = timeit.timeit(lambda: brute_force(graph), number=1)
+        t2 = timeit.timeit(lambda: optimal(graph), number=1)
+        temp_t1.append(t1)
+        temp_t2.append(t2)
+    
+    avg_t1 = sum(temp_t1)/float(len(temp_t1))
+    avg_t2 = sum(temp_t2)/float(len(temp_t2))
 
     two_power.append(i)
-    algo1_time.append(math.log(t1,10))
-    algo2_time.append(math.log(t2,10))
+    algo1_time.append(math.log(avg_t1,10))
+    algo2_time.append(math.log(avg_t2,10))
 
 
 print(two_power)
@@ -94,4 +103,3 @@ print(algo2_time)
 
 plot_figure(two_power, algo1_time)
 plot_figure(two_power, algo2_time)
-
