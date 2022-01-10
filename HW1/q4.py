@@ -3,25 +3,55 @@ import random
 import matplotlib.pyplot as plt
 import math
 
-def graph_generator(num_vertices):
-    # print(num_vertices)
-    g = []
+def graph_generator(num_vertices, is_bipartite=False):
 
-    for i in range(num_vertices):
+    if is_bipartite:
+
+        g = [[0 for i in range(num_vertices)] for j in range(num_vertices)]
         
-        tmp = []
+        separator = random.randint(0, num_vertices)
+        set1 = [ i for i in range(separator)]
+        set2 = [ i for i in range(separator, num_vertices)]
 
-        for j in range(num_vertices):
-            prob = random.randint(0, 1)
-            tmp.append(prob)
+        for i in set1:
+            for j in set2:
+                # print(i,j)
+                if random.randint(0, 1):
+                    g[i][j] = 1
+                    g[j][i] = 1
+        return g
 
-        g.append(tmp)
-    # print(g)
-    return g
+    else:
 
-def plot_figure(x_array, y_array):
+        g = [[0 for i in range(num_vertices)] for j in range(num_vertices)]
+        for i in range(num_vertices):
+            for j in range(num_vertices):
+                if i == j:
+                    continue
+                if random.randint(0, 1):   
+                    g[i][j] = 1
+                    g[j][i] = 1
+        return g
+
+    # g = []
+
+    # for i in range(num_vertices):
+        
+    #     tmp = []
+
+    #     for j in range(num_vertices):
+    #         prob = random.randint(0, 1)
+    #         tmp.append(prob)
+
+    #     g.append(tmp)
+    # return g
+
+def plot_figure(x_array, y_array, is_bipartite=False):
     plt.plot(x_array, y_array)   
-    # print("C2H5OH".translate(subscript)) 
+    if is_bipartite:
+        plt.title('Bipartite Graphs')
+    else:
+        plt.title('')
 
     plt.ylabel('$\mathregular{Log_{10}}$(Time)')
     plt.xlabel('$\mathregular{Log_{2}}$(N)')
@@ -60,7 +90,7 @@ def optimal(graph):
 
     for i in range(num_vertices):
         for j in range(num_vertices):
-            if graph[i][j] == 1:
+            if graph[i][j] == 1 and i != j:
                 edges.append((i,j))
     
     for edge in edges:
@@ -77,12 +107,15 @@ two_power = []
 algo1_time = []
 algo2_time = []
 
-for i in range(2,12):
+# Set True if bipartite
+is_bipartite = True
+
+for i in range(2,10):
     temp_t1 = []
     temp_t2 = []
     print("Graph generated for Num Nodes=",2**i)
-    for gr in range(20):
-        graph = graph_generator(2**i)
+    for gr in range(10):
+        graph = graph_generator(2**i, is_bipartite=is_bipartite)
         n = len(graph)
         t1 = timeit.timeit(lambda: brute_force(graph), number=1)
         t2 = timeit.timeit(lambda: optimal(graph), number=1)
@@ -101,5 +134,5 @@ print(two_power)
 print(algo1_time)
 print(algo2_time)
 
-plot_figure(two_power, algo1_time)
-plot_figure(two_power, algo2_time)
+plot_figure(two_power, algo1_time, is_bipartite=is_bipartite)
+plot_figure(two_power, algo2_time, is_bipartite=is_bipartite)
