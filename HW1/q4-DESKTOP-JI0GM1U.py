@@ -47,13 +47,15 @@ def graph_generator(num_vertices, is_bipartite=False):
     # return g
 
 def plot_figure(x_array, y_array, is_bipartite=False):
+    
     plt.plot(x_array, y_array)
+
     if is_bipartite:
         plt.title('Bipartite Graphs')
     else:
         plt.title('')
 
-    plt.ylabel('$\mathregular{Log_{2}}$(Time)')
+    plt.ylabel('$\mathregular{Log_{10}}$(Time)')
     plt.xlabel('$\mathregular{Log_{2}}$(N)')
     plt.show()
 
@@ -109,30 +111,30 @@ algo2_time = []
 
 # Set True if bipartite
 is_bipartite = True
-y_new = []
+
 for i in range(2,10):
     temp_t1 = []
     temp_t2 = []
     print("Graph generated for Num Nodes=",2**i)
-    for gr in range(5):
+    for gr in range(10):
         graph = graph_generator(2**i, is_bipartite=is_bipartite)
         n = len(graph)
         t1 = timeit.timeit(lambda: brute_force(graph), number=1)
-        # t2 = timeit.timeit(lambda: optimal(graph), number=1)
+        t2 = timeit.timeit(lambda: optimal(graph), number=1)
         temp_t1.append(t1)
-        # temp_t2.append(t2)
+        temp_t2.append(t2)
     
     avg_t1 = sum(temp_t1)/float(len(temp_t1))
-    # avg_t2 = sum(temp_t2)/float(len(temp_t2))
+    avg_t2 = sum(temp_t2)/float(len(temp_t2))
 
     two_power.append(i)
-    algo1_time.append(math.log(avg_t1,2))
-    # algo2_time.append(math.log(avg_t2,2))
-    # y_new.append(math.log(avg_t2,2)/float(i))
+    algo1_time.append(math.log(avg_t1,10))
+    algo2_time.append(math.log(avg_t2,10))
+
 
 print(two_power)
 print(algo1_time)
-# print(algo2_time)
+print(algo2_time)
 
 plot_figure(two_power, algo1_time, is_bipartite=is_bipartite)
-# plot_figure(two_power, algo2_time, is_bipartite=is_bipartite)
+plot_figure(two_power, algo2_time, is_bipartite=is_bipartite)
