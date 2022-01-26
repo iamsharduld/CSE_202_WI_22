@@ -2,9 +2,7 @@ from collections import defaultdict
 import random
 from heapdict import heapdict
 import math
-
 import matplotlib.pyplot as plt
-
 
 def plot_figure(x_array, y_array):
     plt.plot(x_array, y_array)
