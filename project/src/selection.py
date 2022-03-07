@@ -4,7 +4,7 @@ import random
 from src.utils import calculate_board_dim
 from src.fitness import calculate_fitness
 
-def vanilla_selection(boards, num_selected=100):
+def vanilla_selection(boards, perc_selected=10):
     """
         selects the fittest num_selected boards from an array of boards
     """
@@ -14,7 +14,8 @@ def vanilla_selection(boards, num_selected=100):
     # calculate number of boards from which selection is to be done
     num_boards = boards.shape[0]
 
-    # select num_selected boards using vanilla method
+    # select perc_selected*num_boards boards using vanilla method
+    num_selected = int(perc_selected*num_boards*0.01)
     selected_boards_vanilla = np.zeros((num_selected, height, width))
 
     # calculate fitness score of all boards
@@ -75,6 +76,6 @@ def selection(boards, num_selected=100):
         concatenates the boards selected by vanilla and tournament selection
     """
     selected_boards_vanilla = vanilla_selection(boards, num_selected)
-    selected_boards_tournament = tournament_selection(boards, num_selected)
-    selected_boards = np.vstack((selected_boards_vanilla, selected_boards_tournament))
-    return selected_boards
+    #selected_boards_tournament = tournament_selection(boards, num_selected)
+    #selected_boards = np.vstack((selected_boards_vanilla, selected_boards_tournament))
+    return selected_boards_vanilla

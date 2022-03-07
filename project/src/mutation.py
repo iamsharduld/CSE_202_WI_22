@@ -60,20 +60,28 @@ def random_mutation(board, black_to_white_ratio=0.1, white_to_black_ratio=0.1):
     # find number of black and white cells to flip
     num_flipped_black_cells = int(black_to_white_ratio * num_black_cells)
     num_flipped_white_cells = int(white_to_black_ratio * num_white_cells)
-
+    #print(num_flipped_black_cells, num_black_cells, black_to_white_ratio)
     # randomly flip black cells to white
     black_to_white_indices = random.sample(range(num_black_cells), num_flipped_black_cells)
-    for i in range(len(black_to_white_indices)):
-        board[black_cell_indices[black_to_white_indices[i]]] = 0
+    
+    if num_flipped_black_cells > 0:
+        #print(black_cell_indices, np.max(black_to_white_indices), len(black_cell_indices))
+        for i in range(len(black_to_white_indices)):
+            #print('%%', black_cell_indices[black_to_white_indices[i]])
+            board[tuple(black_cell_indices[black_to_white_indices[i]])] = 0
 
     # randomly flip white cells to black
     white_to_black_indices = random.sample(range(num_white_cells), num_flipped_white_cells)
-    for i in range(len(white_to_black_indices)):
-        board[white_cell_indices[white_to_black_indices[i]]] = -1
-    
+    if num_flipped_white_cells > 0:
+        for i in range(len(white_to_black_indices)):
+            #print(board.shape)
+            #print(board[(0,4)])
+            #print('%%', white_cell_indices[white_to_black_indices[i]], board.shape, board[[0,4]])
+            board[tuple(white_cell_indices[white_to_black_indices[i]])] = -1
+        
     return board
 
-def mutation(selected_boards):
+def mutation(selected_boards, mutation_perc=1):
     """
         combines three types of mutation to create mutations in a generation
     """
@@ -82,23 +90,32 @@ def mutation(selected_boards):
 
     # get board dimensions 
     height, width = calculate_board_dim(selected_boards[0])
-
-    mutated_boards = np.zeros((num_boards, height, width))
-    # Perfrom mutation on selected boards with proability 0.5
-    for i in range(num_boards):
-        # Flag to that says if board is to be mutated
-        flag_perform_mutation = random.randrange(100)
-
-        if flag_perform_mutation % 2 == 1:
-            # Flag that specifies the type of mutation
-            flag_mutation_type = random.randrange(300)
-            if flag_mutation_type % 3 == 0:
-                mutated_boards[i] = adjacent_cell_mutation(selected_boards[i])
-            elif flag_mutation_type % 3 == 1:
-                mutated_boards[i] = absolute_difference_mutation(selected_boards[i])
-            else:
-                mutated_boards[i] = random_mutation(selected_boards[i])
-        else:
-            mutated_boards[i] = selected_boards[i]
     
-    return mutated_boards
+    #Selecting parents for crossover based on weighted fitness as probabilites
+    selected_indices = np.random.choice(num_boards, int(mutation_perc*0.01*num_boards))
+    
+    
+    for select_board_idx in selected_indices:
+        selected_boards[select_board_idx] = random_mutation(selected_boards[select_board_idx])
+        if len(np.argwhere(selected_boards[select_board_idx] > 0)) == 0:
+            print(len(np.argwhere(selected_boards[select_board_idx] > 0)))
+
+    # mutated_boards = np.zeros((num_boards, height, width))
+    # # Perfrom mutation on selected boards with proability 0.5
+    # for i in range(num_boards):
+        # Flag to that says if board is to be mutated
+        # flag_perform_mutation = random.randrange(100)
+
+        # if flag_perform_mutation % 2 == 1:
+            # Flag that specifies the type of mutation
+            # flag_mutation_type = random.randrange(300)
+            # if flag_mutation_type % 3 == 0:
+            #     mutated_boards[i] = adjacent_cell_mutation(selected_boards[i])
+            # elif flag_mutation_type % 3 == 1:
+            #     mutated_boards[i] = absolute_difference_mutation(selected_boards[i])
+            # else:
+        # mutated_boards[i] = random_mutation(selected_boards[i])
+        # else:
+        #     mutated_boards[i] = selected_boards[i]
+    
+    return selected_boards #mutated_boards

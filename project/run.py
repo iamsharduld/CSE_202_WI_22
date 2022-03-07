@@ -1,4 +1,5 @@
 import numpy as np 
+import random
 
 from src.validate import validate_board
 from src.initialize import initialize
@@ -24,7 +25,33 @@ def main():
                     [0, 0, 0, 0, 0],
                     [0, 2, 0, 0, 2],
                     [0, 0, 0, 0, 0]], np.int32)  
+
+    init_board = np.array([[0, 6, 10, 0, 0, 3, 0],
+                    [0, 0, 0, 0, 9, 0, 0],
+                    [0, 0, 9, 0, 4, 0, 0], 
+                    [4, 0, 11, 7, 8, 0, 7],
+                    [0, 0, 12, 0, 9, 0, 0],
+                    [0, 0, 8, 0, 0, 0, 0],
+                    [0, 3, 0, 0, 3, 6, 0]], np.int32)
     
+    # init_board = np.array([[4, 0, 5, 0, 0],
+    #                    [6, 0, 0, 0, 0],
+    #                    [0, 0, 0, 0, 7],
+    #                    [0, 0, 0, 0, 5]], np.int32)
+
+    BOARD_5x4 = [np.array([[4, 0, 5, 0, 0],
+                       [6, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 7],
+                       [0, 0, 0, 0, 5]]),
+             np.array([[0, 0, 0, 0, 4],
+                       [0, 7, 8, 0, 0],
+                       [0, 0, 7, 6, 0],
+                       [5, 0, 0, 0, 0]]),
+             np.array([[0, 6, 0, 0, 0],
+                       [0, 6, 7, 0, 0],
+                       [0, 0, 4, 5, 0],
+                       [0, 0, 0, 5, 0]])]
+
     test_board_1 = np.array([[0, 0, 3, 0, 0],
                     [-1, -1, -1, -1, -1],
                     [0, 0, -1, 0, 0],
@@ -50,10 +77,25 @@ def main():
         # Initalize population after every REPLACE_GENERATIONS iterations
         if i % REPLACE_GENERATIONS == 0:
             generated_boards = initialize(init_board)
+            print('#### Run:',int(i/REPLACE_GENERATIONS))
+
+        selection_ratio = 10
+        # Perform selection
+        selected_boards = selection(generated_boards, selection_ratio) #250)
         
-        # Perform selection and validate
-        selected_boards = selection(generated_boards, 250)
-        for board in selected_boards:
+
+        # Perform crossover
+        crossover_boards = crossover(generated_boards, 100-selection_ratio)
+        all_boards = np.vstack((selected_boards, crossover_boards))
+        
+        # Perform mutation
+        if random.uniform(0,1) < 0.01:
+            mutated_boards = mutation(all_boards, mutation_perc=1) #crossover_boards)
+        else:
+            mutated_boards = all_boards.copy()
+        
+        # validate
+        for board in all_boards:
             if validate_board(board) == True:
                 success_flag = True
                 print("The solution is")
@@ -62,27 +104,9 @@ def main():
         if success_flag == True:
             break
 
-        # Perform crossover and validate
-        crossover_boards = crossover(selected_boards, 0.17)
-        for board in crossover_boards:
-            if validate_board(board) == True:
-                success_flag = True
-                print("The solution is")
-                print(board)
-                break
-        if success_flag == True:
-            break
+        print('GENERATION %d'%(i%REPLACE_GENERATIONS))
+        print(generated_boards.shape, selected_boards.shape, crossover_boards.shape, mutated_boards.shape)
 
-        # Perform mutation and validate
-        mutated_boards = mutation(crossover_boards)
-        for board in mutated_boards:
-            if validate_board(board) == True:
-                success_flag = True
-                print("The solution is")
-                print(board)
-                break
-        if success_flag == True:
-            break
-
+        generated_boards = mutated_boards.copy()
 if __name__ == "__main__":
     main()
