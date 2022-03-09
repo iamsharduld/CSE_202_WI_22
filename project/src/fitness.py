@@ -1,7 +1,7 @@
 import numpy as np 
 import random 
 
-from src.utils import calculate_adjacent_black_cells, calculate_absolute_differences
+from src.utils import calculate_adjacent_black_cells, calculate_absolute_differences, calculate_connected_components
 
 def calculate_fitness(board):
     """
@@ -14,6 +14,9 @@ def calculate_fitness(board):
 
     # calculate f2 
     f2 = calculate_absolute_differences(board)
+
+    # calculate f3
+    f3 = calculate_connected_components(board)
     
     # return cumulative fitness of a board    
-    return f1 + f2
+    return f1 + f2 + f3
