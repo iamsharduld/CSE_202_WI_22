@@ -4,9 +4,9 @@ import random
 from src.utils import calculate_board_dim
 from src.fitness import calculate_fitness
 
-def vanilla_selection(boards, perc_selected=10):
+def vanilla_selection(boards, alpha=0.01):
     """
-        selects the fittest num_selected boards from an array of boards
+        selects the fittest aplha fraction of boards from an array of boards
     """
     # calculate dimensions of board 
     height, width = calculate_board_dim(boards[0])
@@ -15,7 +15,7 @@ def vanilla_selection(boards, perc_selected=10):
     num_boards = boards.shape[0]
 
     # select perc_selected*num_boards boards using vanilla method
-    num_selected = int(perc_selected*num_boards*0.01)
+    num_selected = int(alpha * num_boards)
     selected_boards_vanilla = np.zeros((num_selected, height, width))
 
     # calculate fitness score of all boards

@@ -11,15 +11,17 @@ def crossover_left_right(board1, board2):
     # calculate dimensions of board 
     height, width = calculate_board_dim(board1)
     
-    # initialize offsprings boards
+    # initialize offspring boards
     child_board_1, child_board_2 = np.zeros((height, width)), np.zeros((height, width))
 
     # find random crossover point to combine the parents
-    idx = random.randint(0, width-1)
+    idx = random.randint(0, width - 1)
 
+    # Combine left of board1 and right of board2 to create offspring 1
     child_board_1[:, : idx] = board1[:, : idx]
     child_board_1[:, idx:] = board2[:, idx:]
 
+    # combine left of board2 and right of board1 to create offspring 2
     child_board_2[:, : idx] = board2[:, : idx]
     child_board_2[:, idx:] = board1[:, idx:]
 
@@ -32,15 +34,17 @@ def crossover_top_bottom(board1, board2):
     # calculate dimensions of board 
     height, width = calculate_board_dim(board1)
     
-    # initialize offsprings boards
+    # initialize offspring boards
     child_board_1, child_board_2 = np.zeros((height, width)), np.zeros((height, width))
 
     # find random crossover point to combine the parents
-    idx = random.randint(0, height-1)
+    idx = random.randint(0, height - 1)
 
+    # Combine top of board1 and bottom of board2 to create offspring 1
     child_board_1[: idx, :] = board1[: idx, :]
     child_board_1[idx:, :] = board2[idx:, :]
 
+    # Combine top of board2 and bottom of board1 to create offspring 2
     child_board_2[: idx, :] = board2[: idx, :]
     child_board_2[idx:, :] = board1[idx:, :]
     
@@ -63,9 +67,9 @@ def crossover_odd_even(board1, board2):
     new_board[1::2] = board2[1::2]
     return new_board
 
-def crossover(boards, selection_perc):
+def crossover(boards, crossover_fraction):
     """
-        combines three types of crossover to create a new generation 
+        creates a new generation using crossover_fraction of boards as parents
     """
     # Select selction_ratio boards from selection
     num_boards = boards.shape[0]
@@ -75,21 +79,24 @@ def crossover(boards, selection_perc):
     for i in range(num_boards):
         fitness_score[i] = calculate_fitness(boards[i])
 
-    fitness_score = 1 - fitness_score/np.sum(fitness_score)
-    fitness_score = fitness_score/np.sum(fitness_score)
+    fitness_score = 1 - fitness_score / np.sum(fitness_score)
+    fitness_score = fitness_score / np.sum(fitness_score)
 
-    #Selecting parents for crossover based on weighted fitness as probabilites
-    selected_indices = np.random.choice(num_boards, int(selection_perc*0.01*num_boards), p=fitness_score)
-    boards_from_selection = boards[selected_indices]
+    # Select parents for crossover based on weighted fitness as probabilites
+    selected_indices = np.random.choice(num_boards, int(crossover_fraction * num_boards), p=fitness_score)
+    selected_parents = boards[selected_indices]
     
     # Peform crossover
     boards_from_crossover = []
-    for i in range(int(boards_from_selection.shape[0]/2)):
+    for i in range(int(selected_parents.shape[0] / 2)):
 
-        # Select 2 random indices from unselected indices
-        board_indices = (2*i, 2*i+1) #np.random.choice(unselected_indices, 2, replace=False)
+        # Select 2 parents from the selected parents to perform crossover
+        board_indices = (2 * i, 2 * i + 1) 
         
+        # Select crossover method - cut vertically or horizontally 
         crossover_method_idx = random.randint(0,1)
+
+        # Create offspring boards
         if crossover_method_idx == 0:
             boards_from_crossover += crossover_left_right(boards[board_indices[0]], boards[board_indices[1]])
         else:
@@ -97,6 +104,4 @@ def crossover(boards, selection_perc):
 
     boards_from_crossover = np.asarray(boards_from_crossover)
 
-    # Append boards from selection and boards from crossover to get final boards
-    #final_boards = np.vstack((boards_from_selection, boards_from_crossover))
-    return boards_from_crossover #final_boards
+    return boards_from_crossover 

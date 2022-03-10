@@ -26,25 +26,25 @@ def main():
                     [0, 2, 0, 0, 2],
                     [0, 0, 0, 0, 0]], np.int32)  
 
-    init_board = np.array([[0, 6, 10, 0, 0, 3, 0],
-                    [0, 0, 0, 0, 9, 0, 0],
-                    [0, 0, 9, 0, 4, 0, 0], 
-                    [4, 0, 11, 7, 8, 0, 7],
-                    [0, 0, 12, 0, 9, 0, 0],
-                    [0, 0, 8, 0, 0, 0, 0],
-                    [0, 3, 0, 0, 3, 6, 0]], np.int32)
+    # init_board = np.array([[0, 6, 10, 0, 0, 3, 0],
+    #                 [0, 0, 0, 0, 9, 0, 0],
+    #                 [0, 0, 9, 0, 4, 0, 0], 
+    #                 [4, 0, 11, 7, 8, 0, 7],
+    #                 [0, 0, 12, 0, 9, 0, 0],
+    #                 [0, 0, 8, 0, 0, 0, 0],
+    #                 [0, 3, 0, 0, 3, 6, 0]], np.int32)
 
-    init_board = np.array([[0,0,9,0,0,0,0,0,8,0,0],
-                    [0,0,0,0,0,0,0,0,7,0,0],
-                    [0,0,0,0,12,0,0,0,0,0,16],
-                    [9,0,0,0,0,0,0,0,0,0,0],
-                    [0,10,0,0,0,0,0,0,0,0,0],
-                    [0,0,12,0,8,0,11,0,3,0,0],
-                    [0,0,0,0,0,0,0,0,0,3,0],
-                    [0,0,0,0,0,0,0,0,0,0,3],
-                    [7,0,0,0,0,0,2,0,0,0,0],
-                    [0,0,7,0,0,0,0,0,0,0,0],
-                    [0,0,2,0,0,0,0,0,5,0,0]],np.int32)
+    # init_board = np.array([[0,0,9,0,0,0,0,0,8,0,0],
+    #                 [0,0,0,0,0,0,0,0,7,0,0],
+    #                 [0,0,0,0,12,0,0,0,0,0,16],
+    #                 [9,0,0,0,0,0,0,0,0,0,0],
+    #                 [0,10,0,0,0,0,0,0,0,0,0],
+    #                 [0,0,12,0,8,0,11,0,3,0,0],
+    #                 [0,0,0,0,0,0,0,0,0,3,0],
+    #                 [0,0,0,0,0,0,0,0,0,0,3],
+    #                 [7,0,0,0,0,0,2,0,0,0,0],
+    #                 [0,0,7,0,0,0,0,0,0,0,0],
+    #                 [0,0,2,0,0,0,0,0,5,0,0]],np.int32)
     
     # init_board = np.array([[4, 0, 5, 0, 0],
     #                    [6, 0, 0, 0, 0],
@@ -82,6 +82,15 @@ def main():
     # Initialize after REPLACE_GENERATIONS
     REPLACE_GENERATIONS = 500
 
+    # Fraction of boards selected to the next generation
+    alpha = 0.01
+
+    # probability of mutation
+    mutation_prob = 0.01
+
+    # fraction of boards selcted for muatation
+    beta = 0.01
+
     # Flag set true when solution is found
     success_flag = False
 
@@ -91,18 +100,16 @@ def main():
             generated_boards = initialize(init_board)
             print('#### Run:',int(i/REPLACE_GENERATIONS))
 
-        selection_ratio = 10
         # Perform selection
-        selected_boards = selection(generated_boards, selection_ratio) #250)
-        
+        selected_boards = selection(generated_boards, alpha) 
 
         # Perform crossover
-        crossover_boards = crossover(generated_boards, 100-selection_ratio)
+        crossover_boards = crossover(generated_boards, 1 - alpha)
         all_boards = np.vstack((selected_boards, crossover_boards))
         
         # Perform mutation
-        if random.uniform(0,1) < 0.01:
-            mutated_boards = mutation(all_boards, mutation_perc=1) #crossover_boards)
+        if random.uniform(0,1) < mutation_prob:
+            mutated_boards = mutation(all_boards, beta) 
         else:
             mutated_boards = all_boards.copy()
         

@@ -45,9 +45,9 @@ def absolute_difference_mutation(board):
     
     return board
 
-def random_mutation(board, black_to_white_ratio=0.1, white_to_black_ratio=0.1):
+def random_mutation(board, gamma=0.1):
     """
-        random flips black cells to white and vice versa
+        random flips gamma fraction black cells to white and vice versa
     """
     # find black and white cell indices in original board 
     black_cell_indices = np.argwhere(board == -1)
@@ -58,47 +58,39 @@ def random_mutation(board, black_to_white_ratio=0.1, white_to_black_ratio=0.1):
     num_white_cells = white_cell_indices.shape[0]
 
     # find number of black and white cells to flip
-    num_flipped_black_cells = int(black_to_white_ratio * num_black_cells)
-    num_flipped_white_cells = int(white_to_black_ratio * num_white_cells)
-    #print(num_flipped_black_cells, num_black_cells, black_to_white_ratio)
+    num_flipped_black_cells = int(gamma * num_black_cells)
+    num_flipped_white_cells = int(gamma * num_white_cells)
+    
     # randomly flip black cells to white
     black_to_white_indices = random.sample(range(num_black_cells), num_flipped_black_cells)
-    
     if num_flipped_black_cells > 0:
-        #print(black_cell_indices, np.max(black_to_white_indices), len(black_cell_indices))
         for i in range(len(black_to_white_indices)):
-            #print('%%', black_cell_indices[black_to_white_indices[i]])
             board[tuple(black_cell_indices[black_to_white_indices[i]])] = 0
 
     # randomly flip white cells to black
     white_to_black_indices = random.sample(range(num_white_cells), num_flipped_white_cells)
     if num_flipped_white_cells > 0:
         for i in range(len(white_to_black_indices)):
-            #print(board.shape)
-            #print(board[(0,4)])
-            #print('%%', white_cell_indices[white_to_black_indices[i]], board.shape, board[[0,4]])
             board[tuple(white_cell_indices[white_to_black_indices[i]])] = -1
         
     return board
 
-def mutation(selected_boards, mutation_perc=1):
+def mutation(crossover_boards, beta=0.01):
     """
-        combines three types of mutation to create mutations in a generation
+        creates mutations in a generation
     """
     # Calculate number of boards
-    num_boards = selected_boards.shape[0]
+    num_boards = crossover_boards.shape[0]
 
     # get board dimensions 
-    height, width = calculate_board_dim(selected_boards[0])
+    height, width = calculate_board_dim(crossover_boards[0])
     
     #Selecting parents for crossover based on weighted fitness as probabilites
-    selected_indices = np.random.choice(num_boards, int(mutation_perc*0.01*num_boards))
+    selected_indices = np.random.choice(num_boards, int(beta * num_boards))
     
     
     for select_board_idx in selected_indices:
-        selected_boards[select_board_idx] = random_mutation(selected_boards[select_board_idx])
-        if len(np.argwhere(selected_boards[select_board_idx] > 0)) == 0:
-            print(len(np.argwhere(selected_boards[select_board_idx] > 0)))
+        crossover_boards[select_board_idx] = random_mutation(crossover_boards[select_board_idx])
 
     # mutated_boards = np.zeros((num_boards, height, width))
     # # Perfrom mutation on selected boards with proability 0.5
@@ -118,4 +110,4 @@ def mutation(selected_boards, mutation_perc=1):
         # else:
         #     mutated_boards[i] = selected_boards[i]
     
-    return selected_boards #mutated_boards
+    return crossover_boards #mutated_boards
