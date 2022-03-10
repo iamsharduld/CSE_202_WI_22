@@ -71,11 +71,11 @@ def tournament_selection(boards, num_selected=100):
     return selected_boards_tournament
 
 
-def selection(boards, num_selected=100):
+def selection(boards, alpha=0.01):
     """
         concatenates the boards selected by vanilla and tournament selection
     """
-    selected_boards_vanilla = vanilla_selection(boards, num_selected)
+    selected_boards_vanilla = vanilla_selection(boards, alpha)
     #selected_boards_tournament = tournament_selection(boards, num_selected)
     #selected_boards = np.vstack((selected_boards_vanilla, selected_boards_tournament))
     return selected_boards_vanilla
