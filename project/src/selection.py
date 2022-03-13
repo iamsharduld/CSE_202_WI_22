@@ -4,7 +4,7 @@ import random
 from src.utils import calculate_board_dim
 from src.fitness import calculate_fitness
 
-def vanilla_selection(boards, alpha=0.01):
+def vanilla_selection(boards, alpha=0.1):
     """
         selects the fittest aplha fraction of boards from an array of boards
     """
@@ -71,7 +71,7 @@ def tournament_selection(boards, num_selected=100):
     return selected_boards_tournament
 
 
-def selection(boards, alpha=0.01):
+def selection(boards, alpha=0.1):
     """
         concatenates the boards selected by vanilla and tournament selection
     """

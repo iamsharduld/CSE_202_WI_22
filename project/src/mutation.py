@@ -82,13 +82,10 @@ def mutation(crossover_boards, beta=0.01):
     # Calculate number of boards
     num_boards = crossover_boards.shape[0]
 
-    # get board dimensions 
-    height, width = calculate_board_dim(crossover_boards[0])
-    
-    #Selecting parents for crossover based on weighted fitness as probabilites
+    # selecting beta fraction of boards for mutations in a generation
     selected_indices = np.random.choice(num_boards, int(beta * num_boards))
     
-    
+    # perform mutation
     for select_board_idx in selected_indices:
         crossover_boards[select_board_idx] = random_mutation(crossover_boards[select_board_idx])
 
